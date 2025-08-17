@@ -5,29 +5,11 @@ services:
     command: /bin/sh start.sh
     volumes:
       - .:/code
-    expose:
-      - "8000"
-    networks:
-      - hello_network
-
-  nginx:
-    container_name: hello-nginx
-    image: nginx:latest
-    restart: always
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/certs:/etc/nginx/ssl
-      - ./static:/code/static
-      - ./media:/code/media
-    depends_on:
-      - web
+      - "8001:8000"
     networks:
-      - hello_network
-
+      - shared_network  # 使用共享网络
 
 networks:
-  hello_network:
-    driver: bridge
+  shared_network:
+    external: true  # 声明为外部已存在的网络

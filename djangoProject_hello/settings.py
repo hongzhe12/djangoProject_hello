@@ -131,3 +131,9 @@ else:
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ==============================配置路由子路径=======================================
+# 开头和结束都以斜杠结尾
+base_url = '/app1/'          # nginx location路径: /app1/
+STATIC_URL = '/app1/static/' # nginx location路径: /app1/static/

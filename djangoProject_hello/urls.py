@@ -18,7 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
+from djangoProject_hello.settings import base_url
+
+
+def prefixed_path(route, view, base_url = base_url, name=None):
+    """自动添加base_url前缀的辅助函数"""
+    base_url_stripped = base_url.strip('/')
+    full_route = f'{base_url_stripped}/{route}' if base_url_stripped else route
+    return path(full_route, view, name=name)
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('app1/', include('app1.urls')),
+    prefixed_path('admin/', admin.site.urls),
+    prefixed_path('', include('app1.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

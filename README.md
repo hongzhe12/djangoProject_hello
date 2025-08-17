@@ -87,7 +87,7 @@ server {
 ```python
 # ==============================配置子路径=======================================
 # 开头和结束都以斜杠结尾
-base_url = '/app1/'          # nginx location路径: /app1/
+BASE_URL = '/app1/'          # nginx location路径: /app1/
 STATIC_URL = '/app1/static/' # nginx location路径: /app1/static/
 ```
 
@@ -114,10 +114,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from djangoProject_hello.settings import base_url
+from djangoProject_hello.settings import BASE_URL
 
 
-def prefixed_path(route, view, base_url = base_url, name=None):
+def prefixed_path(route, view, base_url = BASE_URL, name=None):
     """自动添加base_url前缀的辅助函数"""
     base_url_stripped = base_url.strip('/')
     full_route = f'{base_url_stripped}/{route}' if base_url_stripped else route

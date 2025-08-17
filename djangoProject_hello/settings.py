@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -134,6 +138,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ==============================配置子路径=======================================
-# 开头和结束都以斜杠结尾
-base_url = '/app1/'          # nginx location路径: /app1/
-STATIC_URL = '/app1/static/' # nginx location路径: /app1/static/
+
+BASE_URL = os.getenv('BASE_URL')              # nginx location路径: /app1/
+STATIC_URL = os.getenv('STATIC_URL')          # nginx location路径: /app1/static/

@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: ${CONTAINER_NAME}
     build: .
     command: /bin/sh start.sh
     volumes:

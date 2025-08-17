@@ -5,8 +5,8 @@ services:
     command: /bin/sh start.sh
     volumes:
       - .:/code
-    ports:
-      - "8001:8000"
+    expose:
+      - "8000"
     networks:
       - shared_network  # 使用共享网络
 

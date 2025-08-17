@@ -25,4 +25,4 @@ RUN uv pip install --system --no-cache-dir -r requirements.txt -i https://mirror
 COPY . .
 
 # 设置环境变量
-ENV DJANGO_SETTINGS_MODULE=djangoProject.settings
+ENV DJANGO_SETTINGS_MODULE=djangoProject_hello.settings

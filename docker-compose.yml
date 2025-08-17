@@ -1,6 +1,5 @@
 services:
   web:
-    container_name: hello-django
     build: .
     command: /bin/sh start.sh
     volumes:

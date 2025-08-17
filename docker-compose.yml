@@ -1,19 +1,6 @@
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: mysite-postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
-    env_file:
-      - ./postgres/.env
-    networks:
-      - mysite_network
-    ports:
-      - "5432:5432"
-
   web:
-    container_name: mysite-django
+    container_name: hello-django
     build: .
     command: /bin/sh start.sh
     volumes:
@@ -23,12 +10,10 @@ services:
     depends_on:
       - postgres
     networks:
-      - mysite_network
-    env_file:
-      - ./postgres/.env
+      - hello_network
 
   nginx:
-    container_name: mysite-nginx
+    container_name: hello-nginx
     image: nginx:latest
     restart: always
     ports:
@@ -42,12 +27,9 @@ services:
     depends_on:
       - web
     networks:
-      - mysite_network
+      - hello_network
 
-volumes:
-  postgres_data:
-    name: "postgres_data"
 
 networks:
-  mysite_network:
+  hello_network:
     driver: bridge

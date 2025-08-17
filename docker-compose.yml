@@ -5,10 +5,8 @@ services:
     command: /bin/sh start.sh
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
+    expose:
+      - "8000"
     networks:
       - hello_network
 

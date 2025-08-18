@@ -17,14 +17,17 @@ def gen_nginx_conf(path: str, port: int, host: str, static_root: str, server_nam
     """
     # 确保路径格式正确
     path = path.strip('/')
-    if path:
-        path = f"/{path}"
+    # if path:
+    #     path = f"/{path}"
 
     # 处理 static_root 路径（转为绝对路径）
     if not os.path.isabs(static_root):
         # 假设 static_root 相对于当前脚本所在目录
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        static_root = os.path.join(script_dir, static_root)
+
+        # static_root = os.path.join(script_dir, static_root)
+        static_root = os.path.join(script_dir, 'static')
+
 
     # 创建输出目录（如果不存在）
     os.makedirs(output_dir, exist_ok=True)

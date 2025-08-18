@@ -30,5 +30,5 @@ def prefixed_path(route, view, BASE_URL = BASE_URL, name=None):
 
 urlpatterns = [
     prefixed_path('admin/', admin.site.urls),
-    prefixed_path('', include('app1.urls')),
+    prefixed_path('', include('app.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

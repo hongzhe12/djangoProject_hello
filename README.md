@@ -45,7 +45,7 @@ server {
     access_log /data/logs/proxy-host-1_access.log proxy;
     error_log /data/logs/proxy-host-1_error.log warn;
     # --------------------------Custom Nginx Configuration----------------------------------
-    location /app1/ {
+    location /app/ {
         proxy_pass http://hello-django:8000/app1/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -57,7 +57,7 @@ server {
     }
 
     # 可选：如果需要代理该路径下的所有子资源（如/static/下的文件）
-    location /app1/static/ {
+    location /app/static/ {
         # 直接指向容器内挂载的静态文件目录（与docker-compose中的容器内路径对应）
         alias /usr/share/nginx/static/;
 
@@ -87,8 +87,8 @@ server {
 ```python
 # ==============================配置子路径=======================================
 # 开头和结束都以斜杠结尾
-BASE_URL = '/app1/'          # nginx location路径: /app1/
-STATIC_URL = '/app1/static/' # nginx location路径: /app1/static/
+BASE_URL = '/app/'          # nginx location路径: /app/
+STATIC_URL = '/app/static/' # nginx location路径: /app/static/
 ```
 
 2. 修改项目路由`urls.py`，增加`prefixed_path`函数，原先的`path`函数改为`prefixed_path`
@@ -127,7 +127,7 @@ def prefixed_path(route, view, base_url=BASE_URL, name=None):
 
 urlpatterns = [
                   prefixed_path('admin/', admin.site.urls),
-                  prefixed_path('', include('app1.urls')),
+                  prefixed_path('', include('app.urls')),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 ```
 
@@ -135,7 +135,7 @@ urlpatterns = [
 3. nginx-proxy-manager中配置Custom Nginx Configuration
 注意，Edit Proxy Host部分自行填写。
 ```bash
-location /app1/ {
+location /app/ {
     proxy_pass http://hello-django:8000/app1/;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -147,7 +147,7 @@ location /app1/ {
 }
 
 # 可选：如果需要代理该路径下的所有子资源（如/static/下的文件）
-location /app1/static/ {
+location /app/static/ {
     # 直接指向容器内挂载的静态文件目录（与docker-compose中的容器内路径对应）
     alias /usr/share/nginx/static/;
     

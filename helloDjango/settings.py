@@ -143,5 +143,5 @@ MEDIA_URL = f'{base_url}'
 
 # ==============================配置子路径=======================================
 
-BASE_URL = os.getenv('BASE_URL')              # nginx location路径: /app1/
-STATIC_URL = os.getenv('STATIC_URL')          # nginx location路径: /app1/static/
+BASE_URL = os.getenv('BASE_URL')              # nginx location路径: /app/
+STATIC_URL = os.getenv('STATIC_URL')          # nginx location路径: /app/static/

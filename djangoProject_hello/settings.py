@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app1.apps.App1Config',
+    'app.apps.App1Config',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +135,10 @@ else:
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+base_url = 'django/app'
+STATIC_URL = f'{base_url}'
+MEDIA_URL = f'{base_url}'
 
 
 # ==============================配置子路径=======================================

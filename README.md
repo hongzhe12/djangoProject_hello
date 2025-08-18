@@ -12,7 +12,7 @@ services:
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt  
-      - /root/djangoProject_hello/static:/usr/share/nginx/static  # 添加静态文件目录挂载（宿主机路径:容器内路径）
+      - /root/helloDjango/static:/usr/share/nginx/static  # 添加静态文件目录挂载（宿主机路径:容器内路径）
     networks:
       - shared_network  # 加入同一个共享网络
 
@@ -92,9 +92,10 @@ STATIC_URL = '/app1/static/' # nginx location路径: /app1/static/
 ```
 
 2. 修改项目路由`urls.py`，增加`prefixed_path`函数，原先的`path`函数改为`prefixed_path`
+
 ```python
 """
-URL configuration for djangoProject_hello project.
+URL configuration for helloDjango project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -114,19 +115,20 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from djangoProject_hello.settings import BASE_URL
+from helloDjango.settings import BASE_URL
 
 
-def prefixed_path(route, view, base_url = BASE_URL, name=None):
+def prefixed_path(route, view, base_url=BASE_URL, name=None):
     """自动添加base_url前缀的辅助函数"""
     base_url_stripped = base_url.strip('/')
     full_route = f'{base_url_stripped}/{route}' if base_url_stripped else route
     return path(full_route, view, name=name)
 
+
 urlpatterns = [
-    prefixed_path('admin/', admin.site.urls),
-    prefixed_path('', include('app1.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                  prefixed_path('admin/', admin.site.urls),
+                  prefixed_path('', include('app1.urls')),
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 ```
 
 

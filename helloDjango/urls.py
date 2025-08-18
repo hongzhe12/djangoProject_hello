@@ -1,5 +1,5 @@
 """
-URL configuration for djangoProject_hello project.
+URL configuration for helloDjango project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from djangoProject_hello.settings import BASE_URL
+from helloDjango.settings import BASE_URL
 
 
 def prefixed_path(route, view, BASE_URL = BASE_URL, name=None):

@@ -136,10 +136,6 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-base_url = 'django/app'
-STATIC_URL = f'{base_url}'
-MEDIA_URL = f'{base_url}'
-
 
 # ==============================配置子路径=======================================
 

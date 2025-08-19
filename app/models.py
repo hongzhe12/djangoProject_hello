@@ -152,8 +152,7 @@ class AppConfigModel(models.Model):
         blank=True,
         verbose_name="配置文件路径",
         help_text="自动生成的Nginx配置文件路径",
-        # default='/etc/nginx/conf.d/app.conf'
-        default='test'
+        default='/etc/nginx/conf.d/nginx.conf'
     )
 
     @classmethod

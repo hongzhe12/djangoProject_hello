@@ -8,6 +8,24 @@ from .forms import EnvironmentVariableForm
 import os
 
 
+from django.http import HttpResponseForbidden
+
+def check_sudo_permission(view_func):
+    """检查是否有sudo权限的装饰器"""
+    def wrapper(request, *args, **kwargs):
+        # 检查是否有写入系统文件的权限
+        test_file = '/etc/environment.test'
+        try:
+            with open(test_file, 'w') as f:
+                f.write('test')
+            os.remove(test_file)
+            return view_func(request, *args, **kwargs)
+        except PermissionError:
+            return HttpResponseForbidden("没有足够的权限修改系统环境变量")
+    return wrapper
+
+
+@check_sudo_permission
 @login_required
 @permission_required('environment.change_environmentvariable', raise_exception=True)
 def environment_list(request):
@@ -45,11 +63,13 @@ def environment_list(request):
         'system_env': dict(os.environ),
         'search_query': search_query
     })
+
+
 @login_required
 @permission_required('environment.add_environmentvariable', raise_exception=True)
 @csrf_protect
 def environment_edit(request, pk=None):
-    """编辑环境变量"""
+    """编辑环境变量 - 修正版本"""
     if pk:
         variable = get_object_or_404(EnvironmentVariable, pk=pk)
     else:
@@ -58,18 +78,28 @@ def environment_edit(request, pk=None):
     if request.method == 'POST':
         form = EnvironmentVariableForm(request.POST, instance=variable)
         if form.is_valid():
-            var = form.save(commit=False)
-            scope = form.cleaned_data['scope']
-
-            # 应用到系统
-            success = var.apply_to_system(scope)
-
-            if success or scope == 'session':
-                var.save()
-                messages.success(request, f'环境变量 {var.key} 已{"更新" if pk else "创建"}并应用到{scope}范围')
-                return redirect('environment:list')
-            else:
-                messages.error(request, '应用到系统失败，可能需要sudo权限')
+            try:
+                var = form.save(commit=False)
+                scope = form.cleaned_data['scope']
+                
+                # 应用到系统
+                success = var.apply_to_system(scope)
+                
+                if success or scope == 'session':
+                    var.save()
+                    messages.success(request, f'环境变量 {var.key} 已{"更新" if pk else "创建"}并应用到{scope}范围')
+                    
+                    if scope == 'global':
+                        messages.info(request, '全局环境变量修改已写入系统文件，部分服务可能需要重启才能生效')
+                    
+                    return redirect('environment:refresh')
+                else:
+                    messages.error(request, '应用到系统失败，可能需要sudo权限或检查文件路径')
+                    
+            except PermissionError as e:
+                messages.error(request, f'权限不足: {e}')
+            except Exception as e:
+                messages.error(request, f'操作失败: {e}')
     else:
         form = EnvironmentVariableForm(instance=variable)
 
@@ -104,6 +134,6 @@ def environment_delete(request, pk):
             pass
 
         messages.success(request, f'环境变量 {key} 已删除')
-        return redirect('list')
+        return redirect('environment:list')
 
     return render(request, 'environment/delete_confirm.html', {'variable': variable})

@@ -31,13 +31,23 @@ class EnvironmentVariable(models.Model):
                     obj.save()
 
     def apply_to_system(self, scope='global'):
-        """将变量应用到系统"""
-        if scope == 'global':
-            # 写入到 /etc/environment 或 /etc/profile.d/
-            self._set_global_env()
-        elif scope == 'session':
-            # 设置当前会话环境变量
-            os.environ[self.key] = self.value
+        """将变量应用到系统 - 修正版本"""
+        try:
+            if scope == 'global':
+                success = self._set_global_env()
+                if success:
+                    # 设置当前进程的环境变量（立即生效）
+                    os.environ[self.key] = self.value
+                    return True
+                return False
+            elif scope == 'session':
+                # 只设置当前会话环境变量
+                os.environ[self.key] = self.value
+                return True
+                
+        except Exception as e:
+            print(f"应用环境变量时出错: {e}")
+            return False
 
     def _set_global_env(self):
         """设置全局环境变量"""
@@ -61,25 +71,56 @@ class EnvironmentVariable(models.Model):
         return True
 
     def _update_env_file(self, file_path):
-        """更新环境变量文件"""
-        lines = []
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as f:
-                lines = f.readlines()
-
-        # 查找并更新或添加变量
-        found = False
-        for i, line in enumerate(lines):
-            if line.startswith(f'{self.key}='):
-                lines[i] = f'{self.key}="{self.value}"\n'
-                found = True
-                break
-
-        if not found:
-            lines.append(f'{self.key}="{self.value}"\n')
-
-        with open(file_path, 'w') as f:
-            f.writelines(lines)
+        """更新环境变量文件 - 修正版本"""
+        try:
+            # 备份原文件
+            if os.path.exists(file_path):
+                import shutil
+                backup_path = f"{file_path}.bak"
+                shutil.copy2(file_path, backup_path)
+            
+            lines = []
+            if os.path.exists(file_path):
+                with open(file_path, 'r') as f:
+                    lines = f.readlines()
+            
+            # 查找并更新或添加变量
+            found = False
+            new_lines = []
+            for line in lines:
+                stripped_line = line.strip()
+                # 跳过空行和注释
+                if not stripped_line or stripped_line.startswith('#'):
+                    new_lines.append(line)
+                    continue
+                
+                # 解析键值对
+                if '=' in stripped_line:
+                    current_key = stripped_line.split('=', 1)[0].strip()
+                    if current_key == self.key:
+                        new_lines.append(f'{self.key}="{self.value}"\n')
+                        found = True
+                        continue
+                
+                new_lines.append(line)
+            
+            if not found:
+                new_lines.append(f'{self.key}="{self.value}"\n')
+            
+            # 写入文件
+            with open(file_path, 'w') as f:
+                f.writelines(new_lines)
+                
+            # 设置正确的文件权限
+            os.chmod(file_path, 0o644)
+            
+        except PermissionError:
+            raise PermissionError("需要sudo权限来修改系统环境变量文件")
+        except Exception as e:
+            # 恢复备份
+            if os.path.exists(backup_path):
+                shutil.copy2(backup_path, file_path)
+            raise e
 
     def _create_profile_script(self, profile_dir):
         """创建profile脚本"""
@@ -91,9 +132,14 @@ class EnvironmentVariable(models.Model):
         os.chmod(script_path, 0o644)  # 设置可读权限
 
     def _reload_environment(self):
-        """重新加载环境变量"""
+        """重新加载环境变量 - 修正版本"""
         try:
-            # 让所有用户会话重新读取配置
-            subprocess.run(['source', '/etc/environment'], shell=True, check=True)
-        except subprocess.CalledProcessError:
-            pass
+            # 方法1: 通过启动新的shell会话重新加载
+            # 这只是一个示意，实际全局环境变量需要用户重新登录才能生效
+            print(f"环境变量 {self.key} 已更新，需要重新登录或重启服务才能生效")
+            
+            # 方法2: 通知相关服务重新加载配置（如果有的话）
+            # 例如：重启某些服务或者发送信号
+            
+        except Exception as e:
+            print(f"重新加载环境变量时出错: {e}")

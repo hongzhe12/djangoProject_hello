@@ -48,8 +48,9 @@
                         <div class="text-danger">{{ form.scope.errors }}</div>
                         {% endif %}
                         <div class="form-text">
-                            <strong>全局</strong>: 写入系统配置文件，对所有用户生效<br>
-                            <strong>当前会话</strong>: 只在当前Web会话中生效
+                            <strong>全局</strong>: 写入系统配置文件，对所有用户生效（需要sudo权限）<br>
+                            <strong>当前会话</strong>: 只在当前Web会话中生效（立即生效）<br>
+                            <small class="text-warning">注意：全局变量修改后可能需要重新登录或重启服务才能完全生效</small>
                         </div>
                     </div>
 

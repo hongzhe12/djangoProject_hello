@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}环境变量列表 - 环境变量管理{% endblock %}
+{% block page_title %}环境变量管理{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <a href="{% url 'environment:add' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> 添加变量
+    </a>
+    <a href="?refresh=1" class="btn btn-secondary">
+        <i class="bi bi-arrow-clockwise"></i> 从系统刷新
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <!-- 搜索和过滤功能（可选） -->
+<div class="card-body">
+        <div class="col-md-6">
+                <form method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control me-2"
+                           placeholder="搜索变量名..." value="{{ request.GET.search }}">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+    </div>
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">环境变量列表</h5>
+            <span class="badge bg-info">共 {{ variables.paginator.count }} 个变量</span>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if variables %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>变量名</th>
+                        <th>值</th>
+                        <th>描述</th>
+                        <th width="150">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for var in variables %}
+                    <tr>
+                        <td>
+                            <code class="fw-bold">{{ var.key }}</code>
+                        </td>
+                        <td>
+                            <code class="text-break">{{ var.value|truncatechars:50 }}</code>
+                            {% if var.value|length > 50 %}
+                            <button class="btn btn-sm btn-link p-0 ms-1"
+                                    data-bs-toggle="tooltip"
+                                    title="{{ var.value }}">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                        <td class="small">{{ var.description|default:"-" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'environment:edit' var.pk %}"
+                                   class="btn btn-outline-primary"
+                                   data-bs-toggle="tooltip"
+                                   title="编辑">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'environment:delete' var.pk %}"
+                                   class="btn btn-outline-danger"
+                                   data-bs-toggle="tooltip"
+                                   title="删除"
+                                   onclick="return confirm('确定要删除变量 {{ var.key }} 吗？')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分页控件 -->
+        {% if variables.paginator.num_pages > 1 %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if variables.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ variables.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;&laquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+                {% endif %}
+
+                {% for num in variables.paginator.page_range %}
+                    {% if variables.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > variables.number|add:'-3' and num < variables.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if variables.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ variables.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ variables.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;&raquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="text-center text-muted small">
+            显示第 {{ variables.start_index }} 到 {{ variables.end_index }} 条，共 {{ variables.paginator.count }} 条记录
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h5 class="text-muted mt-3">暂无环境变量</h5>
+            <p class="text-muted">点击"添加变量"按钮来创建第一个环境变量</p>
+            <a href="{% url 'environment:add' %}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle"></i> 添加变量
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 初始化工具提示
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+})
+</script>
+{% endblock %}

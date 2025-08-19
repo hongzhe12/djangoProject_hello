@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^wody93&uxo_m=@^zo&!=!x*vveb+9!_i)ml=_%15535_wtus$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.apps.App1Config',
+    'environment.apps.EnvironmentConfig'
 ]
 
 MIDDLEWARE = [
@@ -136,6 +137,9 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# 权限设置
+LOGIN_URL = '/app1/admin/login/'
 
 # ==============================配置子路径=======================================
 

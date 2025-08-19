@@ -36,3 +36,4 @@ migrations/*.py
 *.swp
 *.swo
 0001_initial.py
+0001_initial.py

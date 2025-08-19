@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}删除环境变量 - 环境变量管理{% endblock %}
+{% block page_title %}确认删除环境变量{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">删除确认</h5>
+            </div>
+            <div class="card-body">
+                <p>您确定要删除以下环境变量吗？</p>
+                <div class="alert alert-warning">
+                    <strong>{{ variable.key }}</strong><br>
+                    <code>{{ variable.value }}</code>
+                </div>
+                
+                <p class="text-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    警告：此操作将从系统中删除该环境变量，可能会影响依赖此变量的应用程序。
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'environment:list' %}" class="btn btn-secondary me-md-2">取消</a>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('确定要永久删除这个环境变量吗？')">
+                            <i class="bi bi-trash"></i> 确认删除
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

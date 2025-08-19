@@ -39,28 +39,35 @@ server {
     {% for app in apps %}
     # 应用: {{ app.name }}
     location /{{ app.path }}/ {
-        proxy_pass http://{{ app.host }}:{{ app.port }}/;
+        proxy_pass http://127.0.0.1:{{ app.port }}/{{app.path}}/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
     }
 
     # 静态文件
     location /{{ app.path }}/static/ {
         alias {{ app.static_root }}/;
         expires 1d;
+        add_header Cache-Control "public, max-age=86400";
+        autoindex off;
+        try_files $uri $uri/ =404;
     }
 
     # 媒体文件
     location /{{ app.path }}/media/ {
         alias {{ app.static_root }}/media/;
         expires 7d;
+        add_header Cache-Control "public, max-age=604800";
+        autoindex off;
+        try_files $uri $uri/ =404;
     }
     {% endfor %}
 
-    # 保护敏感文件
-    location ~ /\. {
+    # 防止暴露 .git、.env 等敏感文件
+    location ~ /\.(env|git|ht|svn) {
         deny all;
     }
 }
@@ -278,12 +285,12 @@ def generate_nginx_config_on_save(sender, instance, created, **kwargs):
                 logger.error(f"  ❌  写入配置文件失败: {app.config_path}, 错误: {str(e)}", exc_info=True)
 
         # 3. 生成全局配置文件
-        logger.info("开始生成全局 Nginx 配置文件...")
-        try:
-            generate_global_nginx_config()
-            logger.info("✔️ 全局 Nginx 配置文件生成成功。")
-        except Exception as e:
-            logger.error(f"❌ 生成全局配置失败: {str(e)}", exc_info=True)
+        # logger.info("开始生成全局 Nginx 配置文件...")
+        # try:
+        #     generate_global_nginx_config()
+        #     logger.info("✔️ 全局 Nginx 配置文件生成成功。")
+        # except Exception as e:
+        #     logger.error(f"❌ 生成全局配置失败: {str(e)}", exc_info=True)
 
     except Exception as e:
         logger.critical(f"【严重错误】生成 Nginx 配置时发生未预期异常: {str(e)}", exc_info=True)
@@ -304,7 +311,7 @@ def cleanup_nginx_config_on_delete(sender, instance, **kwargs):
             print(f"已删除配置文件: {instance.config_path}")
 
         # 重新生成全局配置
-        generate_global_nginx_config()
+        # generate_global_nginx_config()
 
     except Exception as e:
         print(f"清理Nginx配置时出错: {e}")

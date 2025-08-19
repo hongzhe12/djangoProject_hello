@@ -5,6 +5,7 @@ services:
     command: /bin/sh start.sh
     volumes:
       - .:/code
+      - /etc/nginx/conf.d/:/etc/nginx/conf.d/
     ports:
       - "${PORT}:8000"
     env_file:

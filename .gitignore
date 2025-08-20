@@ -27,8 +27,12 @@ wheels/
 # Django
 staticfiles/
 media/
-migrations/*.py
+migrations/*
+app/migrations/*
 !migrations/__init__.py
+static/admin/*
+*.sqlite3
+*.log
 
 # IDE
 .vscode/

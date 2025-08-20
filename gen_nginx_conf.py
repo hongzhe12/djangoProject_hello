@@ -1,7 +1,8 @@
 from jinja2 import Template
 import os
 from dotenv import load_dotenv
-
+import subprocess
+import sys
 # 加载环境变量
 load_dotenv()
 
@@ -58,10 +59,9 @@ def gen_nginx_conf(path: str, port: int, host: str, static_root: str, server_nam
     # 写入文件
     with open(full_path, "w", encoding='utf-8') as f:
         f.write(nginx_config)
+    print(f"Nginx 配置已生成：{full_path}")
 
-    print(f"✅ Nginx 配置已生成：{full_path}")
-    print(f"   路径映射: {path} -> http://{host}:{port}")
-    print(f"   静态文件: {path}/static/ -> {static_root}")
+
 
 
 # ====================== 从环境变量读取配置 =====================
@@ -80,3 +80,33 @@ gen_nginx_conf(
     server_name=SERVER_NAME,
     output_dir="/etc/nginx/conf.d/"  # 可改为 './output/' 测试
 )
+
+
+try:
+    # 测试 Nginx 配置
+    result = subprocess.run(['nginx', "-t"], capture_output=True, text=True, check=True)
+    out = result.stdout + result.stderr
+    if "warn" in result.stderr:
+        print(f"存在警告！请检查配置！\n{result.stderr}")
+    elif "err" in result.stderr:
+        print("配置错误！")
+        sys.exit(0)
+
+    if "syntax is ok" in out and "test is successful" in out:
+        # 重新加载 Nginx
+        print("重新加载 Nginx 服务...")
+        result = subprocess.run(['nginx', "-s", "reload"], capture_output=True, text=True, check=True)
+        print(f"Nginx 服务已成功重新加载")
+        
+    
+except subprocess.CalledProcessError as e:
+    print(f"❌ Nginx 命令执行失败: {e}")
+    print(f"错误输出: {e.stderr}")
+    print("请手动检查 Nginx 配置并执行 nginx -t && nginx -s reload")
+    
+except FileNotFoundError:
+    print(f"❌ 找不到 nginx 命令")
+    print("请确保 Nginx 已安装并在系统路径中，或指定正确的 nginx_bin_path")
+    
+except Exception as e:
+    print(f"❌ 执行 Nginx 命令时发生未知错误: {e}")

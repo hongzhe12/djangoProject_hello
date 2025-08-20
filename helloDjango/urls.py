@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
 from helloDjango.settings import BASE_URL
 
 
@@ -26,6 +25,7 @@ def prefixed_path(route, view, BASE_URL = BASE_URL, name=None):
     """自动添加BASE_URL前缀的辅助函数"""
     BASE_URL_stripped = BASE_URL.strip('/')
     full_route = f'{BASE_URL_stripped}/{route}' if BASE_URL_stripped else route
+    print(f"路由:{full_route}")
     return path(full_route, view, name=name)
 
 urlpatterns = [

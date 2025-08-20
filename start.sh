@@ -19,4 +19,4 @@ else:
 " | python manage.py shell
 
 # 启动 Django 开发服务器
-uvicorn helloDjango.asgi:application --host 0.0.0.0 --port 8999 --workers 10
+uvicorn helloDjango.asgi:application --host 0.0.0.0 --port 8000 --workers 10

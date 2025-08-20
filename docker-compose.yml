@@ -7,6 +7,6 @@ services:
       - .:/code
       - /etc/nginx/conf.d/:/etc/nginx/conf.d/ # nginx
     ports:
-      - "8999:8999"
+      - "${PORT}:8000"
     env_file:
       - .env

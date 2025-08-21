@@ -76,16 +76,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'helloDjango.wsgi.application'
 
 
+# ==================== 数据库配置 ====================
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
+else:
+    # 数据库配置
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['POSTGRES_DB'],
+            'HOST': 'postgres',
+            'PORT': 5432,
+            'USER': os.environ['POSTGRES_USER'],
+            'PASSWORD': os.environ['POSTGRES_PASSWORD']
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -117,14 +129,15 @@ USE_L10N = True
 USE_TZ = True
 
 
+# ==================== 静态文件配置 ====================
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
 STATIC_URL = 'static/'
+
 if DEBUG:
     # 开发模式下文件服务配置
     STATICFILES_DIRS = [
-        BASE_DIR / "static",
+        os.path.join(BASE_DIR, "static"),
     ]
 else:
     # 生产模式下文件服务配置

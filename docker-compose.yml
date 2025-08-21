@@ -1,12 +1,36 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${CONTAINER_NAME}-postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - dj_network
+    expose:
+      - "5432"
+
   web:
     container_name: ${CONTAINER_NAME}
     build: .
     command: /bin/sh start.sh
     volumes:
       - .:/code
-      - /etc/nginx/conf.d/:/etc/nginx/conf.d/ # nginx
+      - /etc/nginx/conf.d/:/etc/nginx/conf.d/  # nginx
     ports:
       - "${PORT}:8000"
+    networks:
+      - dj_network
     env_file:
       - .env
+
+
+volumes:
+  postgres_data:
+    name: "postgres_data"
+
+networks:
+  dj_network:
+    driver: bridge

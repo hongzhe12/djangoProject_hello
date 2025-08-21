@@ -149,11 +149,6 @@ else:
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# 权限设置
-LOGIN_URL = '/app1/admin/login/'
-
-
-
 # ==================== 日志配置 ====================
 import logging.config
 

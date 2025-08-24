@@ -28,12 +28,4 @@ $COMPOSE up --build -d
 echo -e "${GREEN}=> 当前服务状态:${NC}"
 $COMPOSE ps
 
-# 运行 Nginx 配置生成脚本
-if [ -f "gen_nginx_conf.py" ]; then
-    echo -e "${GREEN}=> 生成 Nginx 配置...${NC}"
-    python gen_nginx_conf.py
-else
-    echo -e "${RED}警告: gen_nginx_conf.py 不存在，跳过${NC}"
-fi
-
 echo -e "${GREEN}✅ 部署完成${NC}"

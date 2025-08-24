@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: ${CONTAINER_NAME}-postgres
+    container_name: app1-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
@@ -13,19 +13,17 @@ services:
       - "5432"
 
   web:
-    container_name: ${CONTAINER_NAME}
+    container_name: app1 # 启动多个django应用的时候，全局替换掉app1
     build: .
     command: /bin/sh start.sh
     volumes:
       - .:/code
-      - /etc/nginx/conf.d/:/etc/nginx/conf.d/  # nginx
     ports:
       - "${PORT}:8000"
     networks:
       - dj_network
     env_file:
       - .env
-
 
 volumes:
   postgres_data:

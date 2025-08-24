@@ -226,3 +226,11 @@ logging.config.dictConfig(LOGGING)
 # ==============================配置子路径=======================================
 BASE_URL = os.getenv('BASE_URL')              # nginx location路径: /app/
 STATIC_URL = os.getenv('STATIC_URL')          # nginx location路径: /app/static/
+
+# ==================== 跨域和 CSRF 配置 ====================
+# 允许所有源进行跨域请求
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ('*')
+CSRF_TRUSTED_ORIGINS = ['https://huanghongzhe.xyz']
+CSRF_COOKIE_SECURE = True

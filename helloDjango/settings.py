@@ -13,6 +13,11 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+# ==================== svg图标加载问题 ====================
+import mimetypes
+mimetypes.add_type("image/svg+xml", ".svg", True)
+mimetypes.add_type("image/svg+xml", ".svgz", True)
+
 # 加载环境变量
 load_dotenv()
 

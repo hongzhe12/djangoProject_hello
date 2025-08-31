@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# 安装依赖
+pip install --no-index --find-links=/code/python_packages/ -r requirements.txt
+
 # 收集静态文件
 python manage.py collectstatic --noinput
 

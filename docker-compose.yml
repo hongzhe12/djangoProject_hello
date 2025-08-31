@@ -18,6 +18,7 @@ services:
     command: /bin/sh start.sh
     volumes:
       - .:/code
+      - ./python_packages:/code/python_packages
     ports:
       - "${PORT}:8000"
     networks:
